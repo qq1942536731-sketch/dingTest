@@ -10,7 +10,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class ActivityService {
@@ -24,6 +27,14 @@ public class ActivityService {
 
     public List<CouponActivity> findAll() {
         return activityRepository.findAll();
+    }
+
+    public Map<Long, List<CouponClaim>> findRecentClaimsByActivity(List<CouponActivity> activities) {
+        Map<Long, List<CouponClaim>> claimsByActivity = new LinkedHashMap<>();
+        for (CouponActivity activity : activities) {
+            claimsByActivity.put(activity.getId(), claimRepository.findTop5ByActivityIdOrderByClaimedAtDesc(activity.getId()));
+        }
+        return claimsByActivity;
     }
 
     public CouponActivity create(ActivityForm form) {
@@ -53,7 +64,7 @@ public class ActivityService {
     }
 
     @Transactional
-    public void issueCoupon(Long activityId, String claimant) {
+    public String issueCoupon(Long activityId, String claimant) {
         CouponActivity activity = activityRepository.findById(activityId)
                 .orElseThrow(() -> new IllegalArgumentException("活动不存在"));
         if (!activity.isWithinWindow(LocalDateTime.now())) {
@@ -66,8 +77,18 @@ public class ActivityService {
         CouponClaim claim = new CouponClaim();
         claim.setActivityId(activityId);
         claim.setClaimant(claimant);
+        claim.setCouponCode(generateCouponCode());
         claim.setClaimedAt(LocalDateTime.now());
         claimRepository.save(claim);
+        return claim.getCouponCode();
+    }
+
+    private String generateCouponCode() {
+        String code;
+        do {
+            code = UUID.randomUUID().toString().replace("-", "").toUpperCase();
+        } while (claimRepository.existsByCouponCode(code));
+        return code;
     }
 
     private void validateWindow(ActivityForm form) {

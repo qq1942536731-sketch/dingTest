@@ -48,5 +48,6 @@ CREATE TABLE IF NOT EXISTS coupon_claim (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   activity_id BIGINT NOT NULL,
   claimant VARCHAR(64) NOT NULL,
+  coupon_code VARCHAR(32) NOT NULL UNIQUE,
   claimed_at DATETIME NOT NULL
 );

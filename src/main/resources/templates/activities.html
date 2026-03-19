@@ -1,47 +1,119 @@
 <!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:replace="fragments :: layout('活动管理', ~{::section})">
-<section>
-    <h1>活动管理</h1>
-    <p class="success" th:if="${success}" th:text="${success}"></p>
-    <p class="error" th:if="${error}" th:text="${error}"></p>
-    <div class="grid two-col">
-        <div class="panel">
-            <h2>新建活动</h2>
-            <form method="post" th:action="@{/activities}" th:object="${activityForm}">
-                <label>活动名称<input th:field="*{name}" /></label>
-                <label>活动描述<textarea th:field="*{description}"></textarea></label>
-                <label>开始时间<input type="datetime-local" th:field="*{startTime}" /></label>
-                <label>结束时间<input type="datetime-local" th:field="*{endTime}" /></label>
+<section class="activity-page">
+    <div class="hero-banner">
+        <div>
+            <span class="eyebrow">Campaign Studio</span>
+            <h1>活动管理</h1>
+            <p>统一查看活动状态、库存进度与发券记录，让运营后台更清晰、更顺手。</p>
+        </div>
+        <div class="hero-stats" th:with="activityTotal=${#lists.size(activities)}, runningTotal=${#lists.size(activities.?[status.name() == 'RUNNING'])}, issuedTotal=${#aggregates.sum(activities.![issuedStock])}">
+            <div class="stat-card accent-blue">
+                <span>活动总数</span>
+                <strong th:text="${activityTotal}">0</strong>
+            </div>
+            <div class="stat-card accent-green">
+                <span>进行中</span>
+                <strong th:text="${runningTotal}">0</strong>
+            </div>
+            <div class="stat-card accent-purple">
+                <span>已发券</span>
+                <strong th:text="${issuedTotal == null ? 0 : issuedTotal}">0</strong>
+            </div>
+        </div>
+    </div>
+
+    <p class="alert success" th:if="${success}" th:text="${success}"></p>
+    <p class="alert error" th:if="${error}" th:text="${error}"></p>
+
+    <div class="grid dashboard-grid">
+        <div class="panel form-panel glass-panel">
+            <div class="panel-header">
+                <div>
+                    <span class="panel-tag">Create</span>
+                    <h2>新建活动</h2>
+                </div>
+                <p>快速配置发券时间、库存和活动说明。</p>
+            </div>
+            <form method="post" th:action="@{/activities}" th:object="${activityForm}" class="stack-form">
+                <label>活动名称<input th:field="*{name}" placeholder="例如：618 限时折扣券" /></label>
+                <label>活动描述<textarea th:field="*{description}" rows="4" placeholder="填写活动亮点、适用场景与发放规则"></textarea></label>
+                <div class="grid compact-grid">
+                    <label>开始时间<input type="datetime-local" th:field="*{startTime}" /></label>
+                    <label>结束时间<input type="datetime-local" th:field="*{endTime}" /></label>
+                </div>
                 <label>券总量<input type="number" min="1" th:field="*{totalStock}" /></label>
                 <button type="submit">创建活动</button>
             </form>
         </div>
-        <div class="panel">
-            <h2>活动列表</h2>
-            <table>
-                <thead><tr><th>ID</th><th>名称</th><th>时间</th><th>库存</th><th>状态</th><th>操作</th></tr></thead>
-                <tbody>
-                <tr th:each="activity : ${activities}">
-                    <td th:text="${activity.id}"></td>
-                    <td th:text="${activity.name}"></td>
-                    <td><span th:text="${#temporals.format(activity.startTime, 'yyyy-MM-dd HH:mm')}"></span> ~ <span th:text="${#temporals.format(activity.endTime, 'yyyy-MM-dd HH:mm')}"></span></td>
-                    <td th:text="${activity.issuedStock} + '/' + ${activity.totalStock}"></td>
-                    <td th:text="${activity.status}"></td>
-                    <td>
-                        <form method="post" th:action="@{'/activities/' + ${activity.id} + '/status'}" class="inline-form">
+
+        <div class="panel list-panel glass-panel">
+            <div class="panel-header">
+                <div>
+                    <span class="panel-tag">Overview</span>
+                    <h2>活动列表</h2>
+                </div>
+                <p>支持状态变更、手动发券，并可查看每张券的唯一编码。</p>
+            </div>
+            <div class="activity-cards">
+                <article class="activity-card" th:each="activity : ${activities}">
+                    <div class="activity-card-top">
+                        <div>
+                            <div class="activity-title-row">
+                                <h3 th:text="${activity.name}">活动名称</h3>
+                                <span class="status-pill" th:text="${activity.status}" th:classappend="' status-' + ${#strings.toLowerCase(activity.status.name())}">RUNNING</span>
+                            </div>
+                            <p class="activity-desc" th:text="${activity.description}">活动描述</p>
+                        </div>
+                        <span class="activity-id" th:text="'ID #' + ${activity.id}">ID #1</span>
+                    </div>
+
+                    <div class="metric-row">
+                        <div class="metric-box">
+                            <span>活动时间</span>
+                            <strong><span th:text="${#temporals.format(activity.startTime, 'yyyy-MM-dd HH:mm')}"></span> ~ <span th:text="${#temporals.format(activity.endTime, 'yyyy-MM-dd HH:mm')}"></span></strong>
+                        </div>
+                        <div class="metric-box">
+                            <span>库存进度</span>
+                            <strong th:text="${activity.issuedStock} + ' / ' + ${activity.totalStock}">0 / 0</strong>
+                        </div>
+                    </div>
+
+                    <div class="progress-track">
+                        <div class="progress-fill" th:style="'width:' + (${activity.totalStock} > 0 ? (${activity.issuedStock * 100 / activity.totalStock}) : 0) + '%' "></div>
+                    </div>
+
+                    <div class="action-grid">
+                        <form method="post" th:action="@{'/activities/' + ${activity.id} + '/status'}" class="inline-form card-form">
                             <select name="status">
-                                <option th:each="status : ${statuses}" th:value="${status}" th:text="${status}"></option>
+                                <option th:each="status : ${statuses}" th:value="${status}" th:text="${status}" th:selected="${status == activity.status}"></option>
                             </select>
-                            <button type="submit">更新</button>
+                            <button type="submit">更新状态</button>
                         </form>
-                        <form method="post" th:action="@{'/api/activities/' + ${activity.id} + '/issue'}" class="inline-form">
+                        <form method="post" th:action="@{'/api/activities/' + ${activity.id} + '/issue'}" class="inline-form card-form">
                             <input name="claimant" placeholder="领取人标识" />
                             <button type="submit">手动发券</button>
                         </form>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+                    </div>
+
+                    <div class="claim-section" th:with="claims=${activityClaims[activity.id]}">
+                        <div class="claim-header">
+                            <h4>最近发券记录</h4>
+                            <span th:text="${claims == null ? 0 : #lists.size(claims)} + ' 条'">0 条</span>
+                        </div>
+                        <div class="empty-state" th:if="${claims == null || #lists.isEmpty(claims)}">暂无发券记录</div>
+                        <div class="claim-list" th:if="${claims != null && !#lists.isEmpty(claims)}">
+                            <div class="claim-item" th:each="claim : ${claims}">
+                                <div>
+                                    <strong th:text="${claim.claimant}">system</strong>
+                                    <p th:text="${#temporals.format(claim.claimedAt, 'yyyy-MM-dd HH:mm:ss')}">2026-03-19 10:00:00</p>
+                                </div>
+                                <code th:text="${claim.couponCode}">CPN001</code>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
         </div>
     </div>
 </section>
