@@ -6,6 +6,8 @@ import com.example.couponadmin.entity.CouponActivity;
 import com.example.couponadmin.entity.CouponClaim;
 import com.example.couponadmin.repository.CouponActivityRepository;
 import com.example.couponadmin.repository.CouponClaimRepository;
+import com.example.couponadmin.util.PaginationHelper;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +29,10 @@ public class ActivityService {
         return activityRepository.findAll();
     }
 
+    public Page<CouponActivity> findPage(int page, int size) {
+        return PaginationHelper.paginate(findAll(), page, size);
+    }
+
     public CouponActivity findById(Long id) {
         return activityRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("活动不存在"));
@@ -34,6 +40,10 @@ public class ActivityService {
 
     public List<CouponClaim> findRecentClaims(Long activityId) {
         return claimRepository.findTop5ByActivityIdOrderByClaimedAtDesc(activityId);
+    }
+
+    public Page<CouponClaim> findClaimPage(Long activityId, int page, int size) {
+        return PaginationHelper.paginate(claimRepository.findByActivityIdOrderByClaimedAtDesc(activityId), page, size);
     }
 
     public CouponActivity create(ActivityForm form) {

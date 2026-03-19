@@ -4,6 +4,8 @@ import com.example.couponadmin.entity.Menu;
 import com.example.couponadmin.entity.Role;
 import com.example.couponadmin.repository.MenuRepository;
 import com.example.couponadmin.repository.RoleRepository;
+import com.example.couponadmin.util.PaginationHelper;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +38,10 @@ public class RoleService {
                 .collect(Collectors.toList());
     }
 
+    public Page<Role> findRolePage(String keyword, int page, int size) {
+        return PaginationHelper.paginate(findRoles(keyword), page, size);
+    }
+
     public List<Menu> findAllMenus() {
         return menuRepository.findAllByOrderBySortOrderAsc();
     }
@@ -48,6 +54,10 @@ public class RoleService {
                         || menu.getPath().toLowerCase(Locale.ROOT).contains(normalized)
                         || menu.getPermission().toLowerCase(Locale.ROOT).contains(normalized))
                 .collect(Collectors.toList());
+    }
+
+    public Page<Menu> findMenuPage(String keyword, int page, int size) {
+        return PaginationHelper.paginate(findMenus(keyword), page, size);
     }
 
     @Transactional

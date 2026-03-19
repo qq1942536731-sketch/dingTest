@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:replace="fragments :: layout('手动发券', ~{::section})">
+<section class="activity-page">
+    <div class="hero-banner compact-banner">
+        <div>
+            <span class="eyebrow">Issue Module</span>
+            <h1>手动发券</h1>
+            <p>本模块只处理发券与发券记录查看，活动编辑已单独拆出。</p>
+        </div>
+        <div class="hero-stats single-stat" th:if="${selectedActivity != null}">
+            <div class="stat-card accent-green">
+                <span>当前活动</span>
+                <strong th:text="${selectedActivity.name}">活动</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid dashboard-grid wide-right">
+        <div class="panel glass-panel">
+            <div class="panel-header">
+                <div>
+                    <span class="panel-tag">Select</span>
+                    <h2>活动列表</h2>
+                </div>
+                <p>选择活动后，在右侧进行手动发券。</p>
+            </div>
+            <table>
+                <thead><tr><th>ID</th><th>活动</th><th>状态</th><th>操作</th></tr></thead>
+                <tbody>
+                <tr th:each="activity : ${activities}">
+                    <td th:text="${activity.id}"></td>
+                    <td th:text="${activity.name}"></td>
+                    <td><span class="status-pill" th:classappend="' status-' + ${#strings.toLowerCase(activity.status.name())}" th:text="${activity.status}"></span></td>
+                    <td><a class="button-link secondary-link" th:href="@{/activities/issue(activityId=${activity.id}, page=${activityPage.number})}">选择</a></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(activities)}"><td colspan="4">暂无活动</td></tr>
+                </tbody>
+            </table>
+            <div class="pagination" th:if="${activityPage.totalPages > 1}">
+                <a class="page-link" th:classappend="${!activityPage.hasPrevious()} ? ' disabled'" th:href="${activityPage.hasPrevious()} ? @{/activities/issue(page=${activityPage.number - 1}, activityId=${selectedActivity != null ? selectedActivity.id : null})} : '#'">上一页</a>
+                <span class="page-meta" th:text="|第 ${activityPage.number + 1} / ${activityPage.totalPages} 页，共 ${activityPage.totalElements} 条|"></span>
+                <a class="page-link" th:classappend="${!activityPage.hasNext()} ? ' disabled'" th:href="${activityPage.hasNext()} ? @{/activities/issue(page=${activityPage.number + 1}, activityId=${selectedActivity != null ? selectedActivity.id : null})} : '#'">下一页</a>
+            </div>
+        </div>
+
+        <div class="panel glass-panel" th:if="${selectedActivity != null}">
+            <div class="panel-header">
+                <div>
+                    <span class="panel-tag">Issue</span>
+                    <h2 th:text="${selectedActivity.name}"></h2>
+                </div>
+                <p>仅用于手工补发券码和查看发券记录。</p>
+            </div>
+            <div class="metric-row">
+                <div class="metric-box">
+                    <span>活动时间</span>
+                    <strong><span th:text="${#temporals.format(selectedActivity.startTime, 'yyyy-MM-dd HH:mm')}"></span> ~ <span th:text="${#temporals.format(selectedActivity.endTime, 'yyyy-MM-dd HH:mm')}"></span></strong>
+                </div>
+                <div class="metric-box">
+                    <span>库存进度</span>
+                    <strong th:text="${selectedActivity.issuedStock} + ' / ' + ${selectedActivity.totalStock}"></strong>
+                </div>
+            </div>
+            <form method="post" th:action="@{'/api/activities/' + ${selectedActivity.id} + '/issue'}" class="inline-form card-form">
+                <input name="claimant" placeholder="领取人标识" />
+                <button type="submit">手动发券</button>
+            </form>
+            <div class="claim-section detail-claims">
+                <div class="claim-header">
+                    <h4>发券记录</h4>
+                    <a class="button-link" th:href="@{'/activities/' + ${selectedActivity.id} + '/edit'}">去活动编辑模块</a>
+                </div>
+                <div class="empty-state" th:if="${#lists.isEmpty(claims)}">暂无发券记录</div>
+                <div class="claim-list" th:if="${!#lists.isEmpty(claims)}">
+                    <div class="claim-item" th:each="claim : ${claims}">
+                        <div>
+                            <strong th:text="${claim.claimant}">system</strong>
+                            <p th:text="${#temporals.format(claim.claimedAt, 'yyyy-MM-dd HH:mm:ss')}">2026-03-19 10:00:00</p>
+                        </div>
+                        <code th:text="${claim.couponCode}">CPN001</code>
+                    </div>
+                </div>
+                <div class="pagination" th:if="${claimPage != null and claimPage.totalPages > 1}">
+                    <a class="page-link" th:classappend="${!claimPage.hasPrevious()} ? ' disabled'" th:href="${claimPage.hasPrevious()} ? @{/activities/issue(activityId=${selectedActivity.id}, page=${activityPage.number}, claimPageIndex=${claimPage.number - 1})} : '#'">上一页</a>
+                    <span class="page-meta" th:text="|第 ${claimPage.number + 1} / ${claimPage.totalPages} 页，共 ${claimPage.totalElements} 条|"></span>
+                    <a class="page-link" th:classappend="${!claimPage.hasNext()} ? ' disabled'" th:href="${claimPage.hasNext()} ? @{/activities/issue(activityId=${selectedActivity.id}, page=${activityPage.number}, claimPageIndex=${claimPage.number + 1})} : '#'">下一页</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</html>

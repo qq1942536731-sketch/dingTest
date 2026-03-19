@@ -12,7 +12,7 @@ INSERT INTO sys_menu(id, name, path, permission, sort_order) VALUES
 (3, '角色管理', '/roles', 'role:view', 3),
 (4, '菜单权限', '/menus', 'menu:view', 4),
 (5, '活动编辑', '/activities', 'activity:edit', 5),
-(6, '手动发券', '/activities', 'activity:issue', 6);
+(6, '手动发券', '/activities/issue', 'activity:issue', 6);
 
 INSERT INTO sys_role(id, code, name) VALUES
 (1, 'ADMIN', '超级管理员'),

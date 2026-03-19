@@ -5,9 +5,9 @@
         <div>
             <span class="eyebrow">Campaign Studio</span>
             <h1>活动管理</h1>
-            <p>列表页聚焦单条记录概览，点击后再进入详情进行状态维护和发券操作。</p>
+            <p>活动编辑与手动发券已拆分为两个独立模块，列表支持分页浏览。</p>
         </div>
-        <div class="hero-stats" th:with="activityTotal=${#lists.size(activities)}, runningTotal=${#lists.size(activities.?[status.name() == 'RUNNING'])}, issuedTotal=${#aggregates.sum(activities.![issuedStock])}">
+        <div class="hero-stats" th:with="activityTotal=${#lists.size(allActivities)}, runningTotal=${#lists.size(allActivities.?[status.name() == 'RUNNING'])}, issuedTotal=${#aggregates.sum(allActivities.![issuedStock])}">
             <div class="stat-card accent-blue">
                 <span>活动总数</span>
                 <strong th:text="${activityTotal}">0</strong>
@@ -53,7 +53,7 @@
                     <span class="panel-tag">Overview</span>
                     <h2>活动列表</h2>
                 </div>
-                <p>表格仅展示单条活动概要，点击“查看详情”进入单独详情页。</p>
+                <p>活动编辑请进入“编辑模块”，手动发券请转到“手动发券模块”。</p>
             </div>
             <table class="activity-table">
                 <thead>
@@ -69,11 +69,21 @@
                     <td><span class="status-pill" th:text="${activity.status}" th:classappend="' status-' + ${#strings.toLowerCase(activity.status.name())}">RUNNING</span></td>
                     <td><span th:text="${#temporals.format(activity.startTime, 'yyyy-MM-dd HH:mm')}"></span><br/><span th:text="${#temporals.format(activity.endTime, 'yyyy-MM-dd HH:mm')}"></span></td>
                     <td th:text="${activity.issuedStock} + ' / ' + ${activity.totalStock}"></td>
-                    <td><a class="button-link" th:href="@{'/activities/' + ${activity.id}}">查看详情</a></td>
+                    <td>
+                        <div class="action-row wrap-actions">
+                            <a class="button-link" th:href="@{'/activities/' + ${activity.id} + '/edit'}">编辑模块</a>
+                            <a class="button-link secondary-link" th:href="@{/activities/issue(activityId=${activity.id})}">手动发券</a>
+                        </div>
+                    </td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(activities)}"><td colspan="6">暂无活动</td></tr>
                 </tbody>
             </table>
+            <div class="pagination" th:if="${activityPage.totalPages > 1}">
+                <a class="page-link" th:classappend="${!activityPage.hasPrevious()} ? ' disabled'" th:href="${activityPage.hasPrevious()} ? @{/activities(page=${activityPage.number - 1})} : '#'">上一页</a>
+                <span class="page-meta" th:text="|第 ${activityPage.number + 1} / ${activityPage.totalPages} 页，共 ${activityPage.totalElements} 条|"></span>
+                <a class="page-link" th:classappend="${!activityPage.hasNext()} ? ' disabled'" th:href="${activityPage.hasNext()} ? @{/activities(page=${activityPage.number + 1})} : '#'">下一页</a>
+            </div>
         </div>
     </div>
 </section>
