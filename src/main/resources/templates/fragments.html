@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="layout(title, content)">
+    <html>
+    <head>
+        <meta charset="UTF-8" />
+        <title th:text="${title}">后台</title>
+        <link rel="stylesheet" th:href="@{/css/app.css}" />
+    </head>
+    <body>
+    <div class="page">
+        <aside class="sidebar">
+            <h2>抢券活动后台</h2>
+            <p class="welcome" th:text="'您好，' + ${currentDisplayName}"></p>
+            <nav>
+                <a th:each="menu : ${grantedMenus}" th:href="@{${menu.path}}" th:text="${menu.name}"></a>
+            </nav>
+        </aside>
+        <main class="content" th:replace="${content}"></main>
+    </div>
+    </body>
+    </html>
+</div>
+</body>
+</html>

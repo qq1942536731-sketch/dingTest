@@ -1,0 +1,21 @@
+body { font-family: Arial, sans-serif; background: #f4f6fb; color: #1f2937; margin: 0; }
+.page { display: flex; min-height: 100vh; }
+.sidebar { width: 220px; background: #111827; color: #fff; padding: 24px; }
+.sidebar nav { display: flex; flex-direction: column; gap: 12px; }
+.sidebar nav a { color: #d1d5db; text-decoration: none; padding: 8px 10px; border-radius: 8px; }
+.sidebar nav a:hover { background: #1f2937; }
+.content { flex: 1; padding: 32px; }
+.cards { display: grid; grid-template-columns: repeat(3, minmax(120px, 1fr)); gap: 16px; }
+.card, .panel, .login-card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08); }
+.grid.two-col { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
+label { display: block; margin-bottom: 12px; font-size: 14px; }
+input, textarea, select, button { width: 100%; box-sizing: border-box; margin-top: 6px; padding: 10px 12px; border-radius: 8px; border: 1px solid #cbd5e1; }
+button { background: #2563eb; color: #fff; border: none; cursor: pointer; }
+table { width: 100%; border-collapse: collapse; background: #fff; }
+th, td { padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: left; vertical-align: top; }
+.inline-form { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-bottom: 8px; }
+.login-body { display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+.login-card { width: 420px; }
+.success { color: #047857; }
+.error { color: #b91c1c; }
+.welcome { color: #93c5fd; }

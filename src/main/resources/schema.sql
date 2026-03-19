@@ -1,0 +1,52 @@
+CREATE TABLE IF NOT EXISTS sys_menu (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(64) NOT NULL,
+  path VARCHAR(128) NOT NULL,
+  permission VARCHAR(64) NOT NULL,
+  sort_order INT DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS sys_role (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  code VARCHAR(64) NOT NULL UNIQUE,
+  name VARCHAR(64) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS sys_user (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  username VARCHAR(64) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  display_name VARCHAR(64) NOT NULL,
+  enabled BIT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS sys_role_menu (
+  role_id BIGINT NOT NULL,
+  menu_id BIGINT NOT NULL,
+  PRIMARY KEY(role_id, menu_id)
+);
+
+CREATE TABLE IF NOT EXISTS sys_user_role (
+  user_id BIGINT NOT NULL,
+  role_id BIGINT NOT NULL,
+  PRIMARY KEY(user_id, role_id)
+);
+
+CREATE TABLE IF NOT EXISTS coupon_activity (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(100) NOT NULL,
+  description VARCHAR(1000),
+  status VARCHAR(32) NOT NULL,
+  start_time DATETIME NOT NULL,
+  end_time DATETIME NOT NULL,
+  total_stock INT NOT NULL,
+  issued_stock INT NOT NULL,
+  version BIGINT
+);
+
+CREATE TABLE IF NOT EXISTS coupon_claim (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  activity_id BIGINT NOT NULL,
+  claimant VARCHAR(64) NOT NULL,
+  claimed_at DATETIME NOT NULL
+);

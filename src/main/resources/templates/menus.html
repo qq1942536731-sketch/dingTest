@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:replace="fragments :: layout('菜单权限', ~{::section})">
+<section>
+    <h1>菜单权限</h1>
+    <table>
+        <thead><tr><th>排序</th><th>菜单名</th><th>路径</th><th>权限标识</th></tr></thead>
+        <tbody>
+        <tr th:each="menu : ${menus}">
+            <td th:text="${menu.sortOrder}"></td>
+            <td th:text="${menu.name}"></td>
+            <td th:text="${menu.path}"></td>
+            <td th:text="${menu.permission}"></td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+</html>
