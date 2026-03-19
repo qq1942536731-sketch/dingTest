@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:replace="fragments :: layout('用户管理', ~{::section})">
+<section>
+    <h1>用户管理</h1>
+    <table>
+        <thead><tr><th>用户名</th><th>显示名</th><th>状态</th><th>角色</th></tr></thead>
+        <tbody>
+        <tr th:each="user : ${users}">
+            <td th:text="${user.username}"></td>
+            <td th:text="${user.displayName}"></td>
+            <td th:text="${user.enabled} ? '启用' : '禁用'"></td>
+            <td th:text="${#strings.listJoin(user.roles.![name], ', ')}"></td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+</html>

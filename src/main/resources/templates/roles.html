@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:replace="fragments :: layout('角色管理', ~{::section})">
+<section>
+    <h1>角色管理</h1>
+    <table>
+        <thead><tr><th>角色编码</th><th>角色名称</th><th>菜单权限</th></tr></thead>
+        <tbody>
+        <tr th:each="role : ${roles}">
+            <td th:text="${role.code}"></td>
+            <td th:text="${role.name}"></td>
+            <td th:text="${#strings.listJoin(role.menus.![name], ', ')}"></td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+</html>

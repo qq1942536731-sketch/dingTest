@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:replace="fragments :: layout('首页', ~{::section})">
+<section>
+    <h1>运营概览</h1>
+    <div class="cards">
+        <div class="card"><strong th:text="${activityCount}"></strong><span>活动数</span></div>
+        <div class="card"><strong th:text="${userCount}"></strong><span>用户数</span></div>
+        <div class="card"><strong th:text="${roleCount}"></strong><span>角色数</span></div>
+    </div>
+    <p>本后台支持活动启停、库存上限控制、以及基于角色的菜单权限控制。</p>
+</section>
+</html>

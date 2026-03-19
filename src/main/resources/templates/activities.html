@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:replace="fragments :: layout('活动管理', ~{::section})">
+<section>
+    <h1>活动管理</h1>
+    <p class="success" th:if="${success}" th:text="${success}"></p>
+    <p class="error" th:if="${error}" th:text="${error}"></p>
+    <div class="grid two-col">
+        <div class="panel">
+            <h2>新建活动</h2>
+            <form method="post" th:action="@{/activities}" th:object="${activityForm}">
+                <label>活动名称<input th:field="*{name}" /></label>
+                <label>活动描述<textarea th:field="*{description}"></textarea></label>
+                <label>开始时间<input type="datetime-local" th:field="*{startTime}" /></label>
+                <label>结束时间<input type="datetime-local" th:field="*{endTime}" /></label>
+                <label>券总量<input type="number" min="1" th:field="*{totalStock}" /></label>
+                <button type="submit">创建活动</button>
+            </form>
+        </div>
+        <div class="panel">
+            <h2>活动列表</h2>
+            <table>
+                <thead><tr><th>ID</th><th>名称</th><th>时间</th><th>库存</th><th>状态</th><th>操作</th></tr></thead>
+                <tbody>
+                <tr th:each="activity : ${activities}">
+                    <td th:text="${activity.id}"></td>
+                    <td th:text="${activity.name}"></td>
+                    <td><span th:text="${#temporals.format(activity.startTime, 'yyyy-MM-dd HH:mm')}"></span> ~ <span th:text="${#temporals.format(activity.endTime, 'yyyy-MM-dd HH:mm')}"></span></td>
+                    <td th:text="${activity.issuedStock} + '/' + ${activity.totalStock}"></td>
+                    <td th:text="${activity.status}"></td>
+                    <td>
+                        <form method="post" th:action="@{'/activities/' + ${activity.id} + '/status'}" class="inline-form">
+                            <select name="status">
+                                <option th:each="status : ${statuses}" th:value="${status}" th:text="${status}"></option>
+                            </select>
+                            <button type="submit">更新</button>
+                        </form>
+                        <form method="post" th:action="@{'/api/activities/' + ${activity.id} + '/issue'}" class="inline-form">
+                            <input name="claimant" placeholder="领取人标识" />
+                            <button type="submit">手动发券</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+</html>
