@@ -30,9 +30,18 @@ public class ActivityController {
         }
         List<CouponActivity> activities = activityService.findAll();
         model.addAttribute("activities", activities);
-        model.addAttribute("activityClaims", activityService.findRecentClaimsByActivity(activities));
         model.addAttribute("statuses", ActivityStatus.values());
         return "activities";
+    }
+
+    @GetMapping("/activities/{id}")
+    @PreAuthorize("hasAuthority('activity:view')")
+    public String detail(@PathVariable Long id, Model model) {
+        CouponActivity activity = activityService.findById(id);
+        model.addAttribute("activity", activity);
+        model.addAttribute("claims", activityService.findRecentClaims(id));
+        model.addAttribute("statuses", ActivityStatus.values());
+        return "activity-detail";
     }
 
     @PostMapping("/activities")
@@ -67,7 +76,7 @@ public class ActivityController {
         } catch (RuntimeException ex) {
             redirectAttributes.addFlashAttribute("error", ex.getMessage());
         }
-        return "redirect:/activities";
+        return "redirect:/activities/" + id;
     }
 
     @PostMapping("/api/activities/{id}/issue")

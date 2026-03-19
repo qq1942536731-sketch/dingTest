@@ -2,16 +2,25 @@
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:replace="fragments :: layout('菜单权限', ~{::section})">
 <section>
     <h1>菜单权限</h1>
-    <table>
-        <thead><tr><th>排序</th><th>菜单名</th><th>路径</th><th>权限标识</th></tr></thead>
-        <tbody>
-        <tr th:each="menu : ${menus}">
-            <td th:text="${menu.sortOrder}"></td>
-            <td th:text="${menu.name}"></td>
-            <td th:text="${menu.path}"></td>
-            <td th:text="${menu.permission}"></td>
-        </tr>
-        </tbody>
-    </table>
+    <div class="panel stack-form">
+        <form method="get" th:action="@{/menus}" class="toolbar-form">
+            <label>按菜单名称/路径/权限筛选<input type="text" name="keyword" th:value="${keyword}" placeholder="输入菜单名称、路径或权限" /></label>
+            <button type="submit">筛选</button>
+        </form>
+    </div>
+    <div class="panel">
+        <table>
+            <thead><tr><th>排序</th><th>菜单名</th><th>路径</th><th>权限标识</th></tr></thead>
+            <tbody>
+            <tr th:each="menu : ${menus}">
+                <td th:text="${menu.sortOrder}"></td>
+                <td th:text="${menu.name}"></td>
+                <td th:text="${menu.path}"></td>
+                <td th:text="${menu.permission}"></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(menus)}"><td colspan="4">暂无符合条件的菜单</td></tr>
+            </tbody>
+        </table>
+    </div>
 </section>
 </html>

@@ -2,16 +2,71 @@
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:replace="fragments :: layout('用户管理', ~{::section})">
 <section>
     <h1>用户管理</h1>
-    <table>
-        <thead><tr><th>用户名</th><th>显示名</th><th>状态</th><th>角色</th></tr></thead>
-        <tbody>
-        <tr th:each="user : ${users}">
-            <td th:text="${user.username}"></td>
-            <td th:text="${user.displayName}"></td>
-            <td th:text="${user.enabled} ? '启用' : '禁用'"></td>
-            <td th:text="${#strings.listJoin(user.roles.![name], ', ')}"></td>
-        </tr>
-        </tbody>
-    </table>
+    <p class="alert success" th:if="${success}" th:text="${success}"></p>
+    <p class="alert error" th:if="${error}" th:text="${error}"></p>
+
+    <div class="panel stack-form">
+        <form method="get" th:action="@{/users}" class="toolbar-form">
+            <label>按用户名/显示名筛选<input type="text" name="keyword" th:value="${keyword}" placeholder="输入用户名关键字" /></label>
+            <button type="submit">筛选</button>
+        </form>
+    </div>
+
+    <div class="grid two-col admin-grid">
+        <div class="panel">
+            <h2>新增用户</h2>
+            <form method="post" th:action="@{/users}" class="stack-form">
+                <label>用户名<input type="text" name="username" required /></label>
+                <label>密码<input type="password" name="password" required /></label>
+                <label>显示名<input type="text" name="displayName" required /></label>
+                <label>状态
+                    <select name="enabled">
+                        <option value="true">启用</option>
+                        <option value="false">禁用</option>
+                    </select>
+                </label>
+                <label>角色分配
+                    <select name="roleIds" multiple size="6">
+                        <option th:each="role : ${roles}" th:value="${role.id}" th:text="${role.name + ' (' + role.code + ')'}"></option>
+                    </select>
+                </label>
+                <button type="submit">创建用户</button>
+            </form>
+        </div>
+
+        <div class="panel">
+            <h2>用户列表</h2>
+            <table>
+                <thead><tr><th>用户名</th><th>显示名</th><th>状态</th><th>角色</th><th>操作</th></tr></thead>
+                <tbody>
+                <tr th:each="user : ${users}">
+                    <td th:text="${user.username}"></td>
+                    <td><input type="text" name="displayName" th:value="${user.displayName}" th:attr="form='user-form-' + ${user.id}" required /></td>
+                    <td>
+                        <select name="enabled" th:attr="form='user-form-' + ${user.id}">
+                            <option value="true" th:selected="${user.enabled}">启用</option>
+                            <option value="false" th:selected="${!user.enabled}">禁用</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="roleIds" multiple size="4" th:attr="form='user-form-' + ${user.id}">
+                            <option th:each="role : ${roles}" th:value="${role.id}" th:text="${role.name}" th:selected="${user.roles.contains(role)}"></option>
+                        </select>
+                    </td>
+                    <td>
+                        <div class="action-stack">
+                            <form method="post" th:action="@{'/users/' + ${user.id}}" th:id="'user-form-' + ${user.id}"></form>
+                            <button type="submit" th:attr="form='user-form-' + ${user.id}">保存</button>
+                            <form method="post" th:action="@{'/users/' + ${user.id} + '/delete'}">
+                                <button type="submit" class="danger-button">删除</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(users)}"><td colspan="5">暂无符合条件的用户</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </section>
 </html>

@@ -273,3 +273,29 @@ th, td { padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: left; vert
   .card-form button { width: 100%; }
   .activity-card-top, .activity-title-row, .claim-item, .claim-header { flex-direction: column; align-items: stretch; }
 }
+
+.toolbar-form { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: end; }
+.admin-grid { align-items: start; margin-top: 20px; }
+.table-form { display: contents; }
+.action-stack { display: grid; gap: 8px; }
+.danger-button { background: linear-gradient(135deg, var(--danger), #ef4444); }
+.button-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 108px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--primary), #3b82f6);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+}
+.table-subtext { margin-top: 6px; color: var(--muted); font-size: 13px; }
+.activity-table td { vertical-align: middle; }
+.detail-actions { margin-top: 20px; }
+.detail-claims { margin-top: 20px; }
+@media (max-width: 768px) {
+  .toolbar-form { grid-template-columns: 1fr; }
+  .table-form { display: block; }
+}

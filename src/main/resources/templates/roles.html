@@ -2,15 +2,58 @@
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:replace="fragments :: layout('角色管理', ~{::section})">
 <section>
     <h1>角色管理</h1>
-    <table>
-        <thead><tr><th>角色编码</th><th>角色名称</th><th>菜单权限</th></tr></thead>
-        <tbody>
-        <tr th:each="role : ${roles}">
-            <td th:text="${role.code}"></td>
-            <td th:text="${role.name}"></td>
-            <td th:text="${#strings.listJoin(role.menus.![name], ', ')}"></td>
-        </tr>
-        </tbody>
-    </table>
+    <p class="alert success" th:if="${success}" th:text="${success}"></p>
+    <p class="alert error" th:if="${error}" th:text="${error}"></p>
+
+    <div class="panel stack-form">
+        <form method="get" th:action="@{/roles}" class="toolbar-form">
+            <label>按角色名称/编码筛选<input type="text" name="keyword" th:value="${keyword}" placeholder="输入角色名称或编码" /></label>
+            <button type="submit">筛选</button>
+        </form>
+    </div>
+
+    <div class="grid two-col admin-grid">
+        <div class="panel">
+            <h2>新增角色</h2>
+            <form method="post" th:action="@{/roles}" class="stack-form">
+                <label>角色编码<input type="text" name="code" required /></label>
+                <label>角色名称<input type="text" name="name" required /></label>
+                <label>菜单权限配置
+                    <select name="menuIds" multiple size="8">
+                        <option th:each="menu : ${menus}" th:value="${menu.id}" th:text="${menu.name + ' / ' + menu.permission}"></option>
+                    </select>
+                </label>
+                <button type="submit">创建角色</button>
+            </form>
+        </div>
+
+        <div class="panel">
+            <h2>角色列表</h2>
+            <table>
+                <thead><tr><th>角色编码</th><th>角色名称</th><th>菜单权限</th><th>操作</th></tr></thead>
+                <tbody>
+                <tr th:each="role : ${roles}">
+                    <td th:text="${role.code}"></td>
+                    <td><input type="text" name="name" th:value="${role.name}" th:attr="form='role-form-' + ${role.id}" required /></td>
+                    <td>
+                        <select name="menuIds" multiple size="5" th:attr="form='role-form-' + ${role.id}">
+                            <option th:each="menu : ${menus}" th:value="${menu.id}" th:text="${menu.name}" th:selected="${role.menus.contains(menu)}"></option>
+                        </select>
+                    </td>
+                    <td>
+                        <div class="action-stack">
+                            <form method="post" th:action="@{'/roles/' + ${role.id}}" th:id="'role-form-' + ${role.id}"></form>
+                            <button type="submit" th:attr="form='role-form-' + ${role.id}">保存</button>
+                            <form method="post" th:action="@{'/roles/' + ${role.id} + '/delete'}">
+                                <button type="submit" class="danger-button">删除</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(roles)}"><td colspan="4">暂无符合条件的角色</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </section>
 </html>
