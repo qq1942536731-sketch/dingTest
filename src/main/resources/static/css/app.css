@@ -13,6 +13,10 @@
 }
 
 * { box-sizing: border-box; }
+html, body {
+  min-height: 100%;
+  width: 100%;
+}
 body {
   font-family: "Inter", "PingFang SC", "Microsoft YaHei", sans-serif;
   background: var(--bg-accent);
@@ -26,9 +30,18 @@ body::before {
   background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), transparent 36%);
   pointer-events: none;
 }
-.page { display: flex; min-height: 100vh; position: relative; }
+.page {
+  display: flex;
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+  position: relative;
+  align-items: stretch;
+}
+section, .activity-page { width: 100%; }
 .sidebar {
-  width: 260px;
+  width: min(260px, 100%);
+  flex: 0 0 260px;
   background: linear-gradient(180deg, #0f172a 0%, #172554 100%);
   color: #fff;
   padding: 28px 22px;
@@ -46,8 +59,14 @@ body::before {
   transition: all .2s ease;
 }
 .sidebar nav a:hover { background: rgba(59, 130, 246, 0.18); border-color: rgba(191, 219, 254, 0.18); transform: translateX(2px); }
-.content { flex: 1; padding: 32px; }
-.cards { display: grid; grid-template-columns: repeat(3, minmax(120px, 1fr)); gap: 16px; }
+.content {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: min(100%, 1600px);
+  padding: clamp(18px, 3vw, 32px);
+  margin: 0 auto;
+}
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
 .card, .panel, .login-card {
   background: var(--panel);
   border-radius: 24px;
@@ -57,9 +76,9 @@ body::before {
   backdrop-filter: blur(16px);
 }
 .grid { display: grid; gap: 20px; }
-.grid.two-col { grid-template-columns: 1fr 2fr; }
-.dashboard-grid { grid-template-columns: minmax(320px, 420px) minmax(0, 1fr); align-items: start; }
-.compact-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid.two-col { grid-template-columns: minmax(280px, 1fr) minmax(0, 2fr); }
+.dashboard-grid { grid-template-columns: minmax(280px, 420px) minmax(0, 1fr); align-items: start; }
+.compact-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
 label { display: block; margin-bottom: 14px; font-size: 14px; color: var(--muted); font-weight: 600; }
 input, textarea, select, button {
   width: 100%;
@@ -89,13 +108,21 @@ table { width: 100%; border-collapse: collapse; background: #fff; }
 th, td { padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: left; vertical-align: top; }
 .inline-form { display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-bottom: 8px; align-items: end; }
 .card-form button { width: auto; min-width: 120px; }
-.login-body { display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-.login-card { width: 420px; }
+.login-body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 24px;
+}
+.login-card { width: min(420px, 100%); }
 .success { color: #047857; }
 .error { color: #b91c1c; }
 .welcome { color: #bfdbfe; line-height: 1.6; }
 .hero-banner {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 1fr);
   justify-content: space-between;
   gap: 20px;
   padding: 28px;
@@ -119,7 +146,18 @@ th, td { padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: left; vert
 .hero-banner h1, .panel-header h2 { margin: 10px 0 8px; }
 .hero-banner p, .panel-header p, .activity-desc, .claim-item p { margin: 0; color: rgba(255,255,255,.82); }
 .panel-header p, .activity-desc, .claim-item p { color: var(--muted); }
-.hero-stats { display: grid; grid-template-columns: repeat(3, minmax(120px, 1fr)); gap: 14px; min-width: 360px; }
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 14px;
+  min-width: 0;
+}
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+}
+.action-grid > * { min-width: 0; }
 .stat-card {
   padding: 18px;
   border-radius: 20px;
@@ -226,12 +264,11 @@ th, td { padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: left; vert
 }
 @media (max-width: 1200px) {
   .dashboard-grid, .grid.two-col, .hero-banner, .hero-stats, .metric-row { grid-template-columns: 1fr; }
-  .hero-banner { display: grid; }
 }
 @media (max-width: 768px) {
   .page { flex-direction: column; }
-  .sidebar { width: 100%; }
-  .content { padding: 18px; }
+  .sidebar { width: 100%; flex-basis: auto; }
+  .content { width: 100%; padding: 18px; }
   .compact-grid, .inline-form { grid-template-columns: 1fr; }
   .card-form button { width: 100%; }
   .activity-card-top, .activity-title-row, .claim-item, .claim-header { flex-direction: column; align-items: stretch; }
