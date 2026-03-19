@@ -28,26 +28,48 @@
         </div>
 
         <div class="panel">
-            <h2>角色列表</h2>
+            <div class="panel-header slim-header">
+                <div>
+                    <h2>角色列表</h2>
+                    <p>列表展示角色基础信息，点击编辑可配置角色可见菜单。</p>
+                </div>
+            </div>
             <table>
                 <thead><tr><th>角色编码</th><th>角色名称</th><th>菜单权限</th><th>操作</th></tr></thead>
                 <tbody>
                 <tr th:each="role : ${roles}">
                     <td th:text="${role.code}"></td>
-                    <td><input type="text" name="name" th:value="${role.name}" th:attr="form='role-form-' + ${role.id}" required /></td>
+                    <td th:text="${role.name}"></td>
                     <td>
-                        <select name="menuIds" multiple size="5" th:attr="form='role-form-' + ${role.id}">
-                            <option th:each="menu : ${menus}" th:value="${menu.id}" th:text="${menu.name}" th:selected="${role.menus.contains(menu)}"></option>
-                        </select>
+                        <div class="tag-list" th:if="${!#lists.isEmpty(role.menus)}">
+                            <span class="menu-tag" th:each="menu : ${role.menus}" th:text="${menu.name}"></span>
+                        </div>
+                        <span class="table-subtext" th:if="${#lists.isEmpty(role.menus)}">未配置菜单权限</span>
                     </td>
                     <td>
-                        <div class="action-stack">
-                            <form method="post" th:action="@{'/roles/' + ${role.id}}" th:id="'role-form-' + ${role.id}"></form>
-                            <button type="submit" th:attr="form='role-form-' + ${role.id}">保存</button>
+                        <div class="action-row">
+                            <button type="button" class="secondary-button" th:attr="onclick=|document.getElementById('role-modal-${role.id}').showModal()|">编辑</button>
                             <form method="post" th:action="@{'/roles/' + ${role.id} + '/delete'}">
                                 <button type="submit" class="danger-button">删除</button>
                             </form>
                         </div>
+                        <dialog class="edit-dialog" th:id="'role-modal-' + ${role.id}">
+                            <form method="dialog" class="dialog-close-row"><button type="submit" class="ghost-button">×</button></form>
+                            <h3 th:text="'编辑角色：' + ${role.name}"></h3>
+                            <form method="post" th:action="@{'/roles/' + ${role.id}}" class="stack-form">
+                                <label>角色编码<input type="text" th:value="${role.code}" readonly /></label>
+                                <label>角色名称<input type="text" name="name" th:value="${role.name}" required /></label>
+                                <label>可见菜单列表
+                                    <select name="menuIds" multiple size="8">
+                                        <option th:each="menu : ${menus}" th:value="${menu.id}" th:text="${menu.name + ' / ' + menu.permission}" th:selected="${role.menus.contains(menu)}"></option>
+                                    </select>
+                                </label>
+                                <div class="action-row">
+                                    <button type="submit">保存修改</button>
+                                    <button type="button" class="ghost-button" th:attr="onclick=|document.getElementById('role-modal-${role.id}').close()|">取消</button>
+                                </div>
+                            </form>
+                        </dialog>
                     </td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(roles)}"><td colspan="4">暂无符合条件的角色</td></tr>
