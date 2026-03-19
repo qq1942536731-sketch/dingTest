@@ -25,9 +25,9 @@ INSERT INTO sys_role_menu(role_id, menu_id) VALUES
 (3,1),(3,2),(3,3),(3,4);
 
 INSERT INTO sys_user(id, username, password, display_name, enabled) VALUES
-(1, 'admin', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', '超级管理员', b'1'),
-(2, 'ops', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', '运营同学', b'1'),
-(3, 'auditor', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', '审计同学', b'1');
+(1, 'admin', '$2b$10$KkaolGYmeBPtRA0Vo.TWEeBKUfa9yULFty//ZA6.ejFqZ7Jk3meTy', '超级管理员', b'1'),
+(2, 'ops', '$2b$10$KkaolGYmeBPtRA0Vo.TWEeBKUfa9yULFty//ZA6.ejFqZ7Jk3meTy', '运营同学', b'1'),
+(3, 'auditor', '$2b$10$KkaolGYmeBPtRA0Vo.TWEeBKUfa9yULFty//ZA6.ejFqZ7Jk3meTy', '审计同学', b'1');
 
 INSERT INTO sys_user_role(user_id, role_id) VALUES
 (1,1),(2,2),(3,3);
