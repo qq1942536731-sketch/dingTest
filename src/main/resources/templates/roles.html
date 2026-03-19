@@ -53,6 +53,11 @@
                 <tr th:if="${#lists.isEmpty(roles)}"><td colspan="4">暂无符合条件的角色</td></tr>
                 </tbody>
             </table>
+            <div class="pagination" th:if="${rolePage.totalPages > 1}">
+                <a class="page-link" th:classappend="${!rolePage.hasPrevious()} ? ' disabled'" th:href="${rolePage.hasPrevious()} ? @{/roles(page=${rolePage.number - 1}, keyword=${keyword})} : '#'">上一页</a>
+                <span class="page-meta" th:text="|第 ${rolePage.number + 1} / ${rolePage.totalPages} 页，共 ${rolePage.totalElements} 条|"></span>
+                <a class="page-link" th:classappend="${!rolePage.hasNext()} ? ' disabled'" th:href="${rolePage.hasNext()} ? @{/roles(page=${rolePage.number + 1}, keyword=${keyword})} : '#'">下一页</a>
+            </div>
         </div>
     </div>
 </section>

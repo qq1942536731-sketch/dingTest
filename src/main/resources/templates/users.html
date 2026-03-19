@@ -35,37 +35,60 @@
         </div>
 
         <div class="panel">
-            <h2>用户列表</h2>
+            <div class="panel-header slim-header">
+                <div>
+                    <h2>用户列表</h2>
+                    <p>列表仅展示用户基础信息，点击详情查看用户权限。</p>
+                </div>
+            </div>
             <table>
                 <thead><tr><th>用户名</th><th>显示名</th><th>状态</th><th>角色</th><th>操作</th></tr></thead>
                 <tbody>
                 <tr th:each="user : ${users}">
                     <td th:text="${user.username}"></td>
-                    <td><input type="text" name="displayName" th:value="${user.displayName}" th:attr="form='user-form-' + ${user.id}" required /></td>
+                    <td th:text="${user.displayName}"></td>
+                    <td><span class="status-pill" th:classappend="${user.enabled} ? ' status-running' : ' status-ended'" th:text="${user.enabled ? '启用' : '禁用'}"></span></td>
+                    <td th:text="${#strings.listJoin(user.roles.![name], '、')}"></td>
                     <td>
-                        <select name="enabled" th:attr="form='user-form-' + ${user.id}">
-                            <option value="true" th:selected="${user.enabled}">启用</option>
-                            <option value="false" th:selected="${!user.enabled}">禁用</option>
-                        </select>
-                    </td>
-                    <td>
-                        <select name="roleIds" multiple size="4" th:attr="form='user-form-' + ${user.id}">
-                            <option th:each="role : ${roles}" th:value="${role.id}" th:text="${role.name}" th:selected="${user.roles.contains(role)}"></option>
-                        </select>
-                    </td>
-                    <td>
-                        <div class="action-stack">
-                            <form method="post" th:action="@{'/users/' + ${user.id}}" th:id="'user-form-' + ${user.id}"></form>
-                            <button type="submit" th:attr="form='user-form-' + ${user.id}">保存</button>
+                        <div class="action-row">
+                            <a class="button-link secondary-link" th:href="@{'/users/' + ${user.id}}">详情</a>
+                            <button type="button" class="secondary-button" th:attr="onclick=|document.getElementById('user-modal-${user.id}').showModal()|">编辑</button>
                             <form method="post" th:action="@{'/users/' + ${user.id} + '/delete'}">
                                 <button type="submit" class="danger-button">删除</button>
                             </form>
                         </div>
+                        <dialog class="edit-dialog" th:id="'user-modal-' + ${user.id}">
+                            <form method="dialog" class="dialog-close-row"><button type="submit" class="ghost-button">×</button></form>
+                            <h3 th:text="'编辑用户：' + ${user.username}"></h3>
+                            <form method="post" th:action="@{'/users/' + ${user.id}}" class="stack-form">
+                                <label>显示名<input type="text" name="displayName" th:value="${user.displayName}" required /></label>
+                                <label>状态
+                                    <select name="enabled">
+                                        <option value="true" th:selected="${user.enabled}">启用</option>
+                                        <option value="false" th:selected="${!user.enabled}">禁用</option>
+                                    </select>
+                                </label>
+                                <label>角色分配
+                                    <select name="roleIds" multiple size="6">
+                                        <option th:each="role : ${roles}" th:value="${role.id}" th:text="${role.name + ' / ' + role.code}" th:selected="${user.roles.contains(role)}"></option>
+                                    </select>
+                                </label>
+                                <div class="action-row">
+                                    <button type="submit">保存修改</button>
+                                    <button type="button" class="ghost-button" th:attr="onclick=|document.getElementById('user-modal-${user.id}').close()|">取消</button>
+                                </div>
+                            </form>
+                        </dialog>
                     </td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(users)}"><td colspan="5">暂无符合条件的用户</td></tr>
                 </tbody>
             </table>
+            <div class="pagination" th:if="${userPage.totalPages > 1}">
+                <a class="page-link" th:classappend="${!userPage.hasPrevious()} ? ' disabled'" th:href="${userPage.hasPrevious()} ? @{/users(page=${userPage.number - 1}, keyword=${keyword})} : '#'">上一页</a>
+                <span class="page-meta" th:text="|第 ${userPage.number + 1} / ${userPage.totalPages} 页，共 ${userPage.totalElements} 条|"></span>
+                <a class="page-link" th:classappend="${!userPage.hasNext()} ? ' disabled'" th:href="${userPage.hasNext()} ? @{/users(page=${userPage.number + 1}, keyword=${keyword})} : '#'">下一页</a>
+            </div>
         </div>
     </div>
 </section>

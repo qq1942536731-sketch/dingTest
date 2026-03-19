@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:replace="fragments :: layout('用户详情', ~{::section})">
+<section>
+    <div class="panel glass-panel">
+        <div class="activity-card-top">
+            <div>
+                <span class="panel-tag">User Detail</span>
+                <h1 th:text="${detailUser.displayName}">用户名</h1>
+                <p class="activity-desc" th:text="'账号：' + ${detailUser.username}"></p>
+            </div>
+            <span class="status-pill" th:classappend="${detailUser.enabled} ? ' status-running' : ' status-ended'" th:text="${detailUser.enabled ? '启用' : '禁用'}"></span>
+        </div>
+        <div class="metric-row single-column">
+            <div class="metric-box">
+                <span>角色列表</span>
+                <strong th:text="${#strings.listJoin(detailUser.roles.![name], '、')}"></strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel glass-panel detail-claims">
+        <div class="claim-header">
+            <h4>用户权限</h4>
+            <a class="button-link" th:href="@{/users}">返回用户列表</a>
+        </div>
+        <table>
+            <thead><tr><th>角色</th><th>菜单</th><th>权限标识</th></tr></thead>
+            <tbody>
+            <tr th:each="role : ${detailUser.roles}">
+                <td th:text="${role.name + ' (' + role.code + ')'}"></td>
+                <td>
+                    <div th:each="menu : ${role.menus}" th:text="${menu.name}"></div>
+                </td>
+                <td>
+                    <div th:each="menu : ${role.menus}" th:text="${menu.permission}"></div>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(detailUser.roles)}"><td colspan="3">该用户暂无角色权限</td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+</html>

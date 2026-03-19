@@ -5,6 +5,8 @@ import com.example.couponadmin.entity.Menu;
 import com.example.couponadmin.entity.Role;
 import com.example.couponadmin.repository.AdminUserRepository;
 import com.example.couponadmin.repository.RoleRepository;
+import com.example.couponadmin.util.PaginationHelper;
+import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +50,15 @@ public class AdminUserService {
                         || user.getDisplayName().toLowerCase(Locale.ROOT).contains(normalized))
                 .sorted(Comparator.comparing(AdminUser::getId))
                 .collect(Collectors.toList());
+    }
+
+    public Page<AdminUser> findPage(String keyword, int page, int size) {
+        return PaginationHelper.paginate(findAll(keyword), page, size);
+    }
+
+    public AdminUser findById(Long id) {
+        return adminUserRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("用户不存在"));
     }
 
     @Transactional

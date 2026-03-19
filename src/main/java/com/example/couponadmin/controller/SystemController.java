@@ -1,7 +1,9 @@
 package com.example.couponadmin.controller;
 
+import com.example.couponadmin.entity.AdminUser;
 import com.example.couponadmin.service.AdminUserService;
 import com.example.couponadmin.service.RoleService;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,6 +17,8 @@ import java.util.List;
 
 @Controller
 public class SystemController {
+    private static final int PAGE_SIZE = 8;
+
     private final AdminUserService adminUserService;
     private final RoleService roleService;
 
@@ -25,11 +29,23 @@ public class SystemController {
 
     @GetMapping("/users")
     @PreAuthorize("hasAuthority('user:view')")
-    public String users(@RequestParam(required = false, defaultValue = "") String keyword, Model model) {
+    public String users(@RequestParam(required = false, defaultValue = "") String keyword,
+                        @RequestParam(defaultValue = "0") int page,
+                        Model model) {
+        Page<?> userPage = adminUserService.findPage(keyword, page, PAGE_SIZE);
         model.addAttribute("keyword", keyword);
-        model.addAttribute("users", adminUserService.findAll(keyword));
+        model.addAttribute("userPage", userPage);
+        model.addAttribute("users", userPage.getContent());
         model.addAttribute("roles", roleService.findAllRoles());
         return "users";
+    }
+
+    @GetMapping("/users/{id}")
+    @PreAuthorize("hasAuthority('user:view')")
+    public String userDetail(@PathVariable Long id, Model model) {
+        AdminUser user = adminUserService.findById(id);
+        model.addAttribute("detailUser", user);
+        return "user-detail";
     }
 
     @PostMapping("/users")
@@ -79,9 +95,13 @@ public class SystemController {
 
     @GetMapping("/roles")
     @PreAuthorize("hasAuthority('role:view')")
-    public String roles(@RequestParam(required = false, defaultValue = "") String keyword, Model model) {
+    public String roles(@RequestParam(required = false, defaultValue = "") String keyword,
+                        @RequestParam(defaultValue = "0") int page,
+                        Model model) {
+        Page<?> rolePage = roleService.findRolePage(keyword, page, PAGE_SIZE);
         model.addAttribute("keyword", keyword);
-        model.addAttribute("roles", roleService.findRoles(keyword));
+        model.addAttribute("rolePage", rolePage);
+        model.addAttribute("roles", rolePage.getContent());
         model.addAttribute("menus", roleService.findAllMenus());
         return "roles";
     }
@@ -130,9 +150,13 @@ public class SystemController {
 
     @GetMapping("/menus")
     @PreAuthorize("hasAuthority('menu:view')")
-    public String menus(@RequestParam(required = false, defaultValue = "") String keyword, Model model) {
+    public String menus(@RequestParam(required = false, defaultValue = "") String keyword,
+                        @RequestParam(defaultValue = "0") int page,
+                        Model model) {
+        Page<?> menuPage = roleService.findMenuPage(keyword, page, PAGE_SIZE);
         model.addAttribute("keyword", keyword);
-        model.addAttribute("menus", roleService.findMenus(keyword));
+        model.addAttribute("menuPage", menuPage);
+        model.addAttribute("menus", menuPage.getContent());
         return "menus";
     }
 }

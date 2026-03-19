@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:replace="fragments :: layout('活动详情', ~{::section})">
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" th:replace="fragments :: layout('活动编辑', ~{::section})">
 <section class="activity-page">
     <div class="panel glass-panel">
         <div class="activity-card-top">
             <div>
-                <span class="panel-tag">Detail</span>
+                <span class="panel-tag">Edit Module</span>
                 <h1 th:text="${activity.name}">活动名称</h1>
                 <p class="activity-desc" th:text="${activity.description}">活动描述</p>
             </div>
@@ -30,27 +30,7 @@
                 </select>
                 <button type="submit">更新状态</button>
             </form>
-            <form method="post" th:action="@{'/api/activities/' + ${activity.id} + '/issue'}" class="inline-form card-form">
-                <input name="claimant" placeholder="领取人标识" />
-                <button type="submit">手动发券</button>
-            </form>
-        </div>
-    </div>
-
-    <div class="panel glass-panel claim-section detail-claims">
-        <div class="claim-header">
-            <h4>最近发券记录</h4>
-            <a class="button-link" th:href="@{/activities}">返回活动列表</a>
-        </div>
-        <div class="empty-state" th:if="${#lists.isEmpty(claims)}">暂无发券记录</div>
-        <div class="claim-list" th:if="${!#lists.isEmpty(claims)}">
-            <div class="claim-item" th:each="claim : ${claims}">
-                <div>
-                    <strong th:text="${claim.claimant}">system</strong>
-                    <p th:text="${#temporals.format(claim.claimedAt, 'yyyy-MM-dd HH:mm:ss')}">2026-03-19 10:00:00</p>
-                </div>
-                <code th:text="${claim.couponCode}">CPN001</code>
-            </div>
+            <a class="button-link" th:href="@{/activities/issue(activityId=${activity.id})}">前往手动发券模块</a>
         </div>
     </div>
 </section>

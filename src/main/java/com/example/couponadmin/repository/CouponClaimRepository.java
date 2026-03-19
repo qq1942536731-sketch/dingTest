@@ -8,5 +8,7 @@ import java.util.List;
 public interface CouponClaimRepository extends JpaRepository<CouponClaim, Long> {
     List<CouponClaim> findTop5ByActivityIdOrderByClaimedAtDesc(Long activityId);
 
+    List<CouponClaim> findByActivityIdOrderByClaimedAtDesc(Long activityId);
+
     boolean existsByCouponCode(String couponCode);
 }
