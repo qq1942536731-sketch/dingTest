@@ -10,9 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -29,12 +27,13 @@ public class ActivityService {
         return activityRepository.findAll();
     }
 
-    public Map<Long, List<CouponClaim>> findRecentClaimsByActivity(List<CouponActivity> activities) {
-        Map<Long, List<CouponClaim>> claimsByActivity = new LinkedHashMap<>();
-        for (CouponActivity activity : activities) {
-            claimsByActivity.put(activity.getId(), claimRepository.findTop5ByActivityIdOrderByClaimedAtDesc(activity.getId()));
-        }
-        return claimsByActivity;
+    public CouponActivity findById(Long id) {
+        return activityRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("活动不存在"));
+    }
+
+    public List<CouponClaim> findRecentClaims(Long activityId) {
+        return claimRepository.findTop5ByActivityIdOrderByClaimedAtDesc(activityId);
     }
 
     public CouponActivity create(ActivityForm form) {
@@ -52,8 +51,7 @@ public class ActivityService {
 
     @Transactional
     public void updateStatus(Long id, ActivityStatus target) {
-        CouponActivity activity = activityRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("活动不存在"));
+        CouponActivity activity = findById(id);
         if (target == ActivityStatus.RUNNING) {
             LocalDateTime now = LocalDateTime.now();
             if (!activity.isWithinWindow(now)) {
@@ -65,8 +63,7 @@ public class ActivityService {
 
     @Transactional
     public String issueCoupon(Long activityId, String claimant) {
-        CouponActivity activity = activityRepository.findById(activityId)
-                .orElseThrow(() -> new IllegalArgumentException("活动不存在"));
+        CouponActivity activity = findById(activityId);
         if (!activity.isWithinWindow(LocalDateTime.now())) {
             throw new IllegalStateException("活动不在可发券时间窗口内");
         }

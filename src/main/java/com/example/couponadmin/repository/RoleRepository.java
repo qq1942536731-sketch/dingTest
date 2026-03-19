@@ -10,4 +10,6 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
     @Override
     @EntityGraph(attributePaths = "menus")
     List<Role> findAll();
+
+    boolean existsByCode(String code);
 }
