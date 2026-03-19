@@ -292,6 +292,8 @@ th, td { padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: left; vert
   font-weight: 700;
 }
 .table-subtext { margin-top: 6px; color: var(--muted); font-size: 13px; }
+.tag-list { display: flex; gap: 8px; flex-wrap: wrap; }
+.menu-tag { display: inline-flex; align-items: center; padding: 6px 10px; border-radius: 999px; background: #eff6ff; color: var(--primary); font-size: 12px; font-weight: 700; }
 .activity-table td { vertical-align: middle; }
 .detail-actions { margin-top: 20px; }
 .detail-claims { margin-top: 20px; }
